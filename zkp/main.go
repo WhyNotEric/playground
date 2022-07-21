@@ -2,41 +2,47 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Problem []int
 type Assignment []int
 type Witness []int
 
+var Random = 1
+
 func main() {
 
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed(time.Now().UnixNano())
 
-	problem := Problem{4, 11, 8, 1}
-	assignment := Assignment{1, -1, 1, -1}
+	// problem := Problem{4, 11, 8, 1}
+	// assignment := Assignment{1, -1, 1, -1}
 
-	witness, err := getWitness(problem, assignment)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(witness)
+	// witness, err := getWitness(problem, assignment)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(witness)
+
+	zkp := test(10)
+	fmt.Printf("Make a zkp work? %t", zkp)
 }
 
 func test(q int) bool {
 	problem := []int{1, 2, 3, 6, 6, 6, 12}
-	assignment := []int{1, 1, 1, -1, -1, -1, 1}
+	assignment := []int{1, 1, -1, -1, -1, -1, 1}
 	proof, err := getProof(problem, assignment, q)
 	if err != nil {
 		fmt.Println(err)
 		return false
 	}
+	fmt.Print("\n")
 	fmt.Println(proof)
 	return verifyProof(problem, proof)
 }
@@ -75,13 +81,15 @@ func getWitness(problem Problem, assignment Assignment) (witness Witness, err er
 	for i, v := range witness {
 		vsm[i] = v + shift
 	}
+	fmt.Printf("\n getWintness:")
+	fmt.Println(vsm)
 	return vsm, nil
 }
 
 func hashString(str string) string {
 	h := sha256.New()
 	h.Write([]byte(str))
-	return string(h.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }
 
 type MerkleTree struct {
@@ -98,8 +106,9 @@ func NewMerkleTree(data []int) MerkleTree {
 	for range appendedData {
 		tree = append(tree, "")
 	}
-	for _, data := range appendedData {
-		tree = append(tree, hashString(fmt.Sprint(data)))
+
+	for _, d := range appendedData {
+		tree = append(tree, hashString(fmt.Sprint(d)))
 	}
 
 	for i := range appendedData {
@@ -107,6 +116,10 @@ func NewMerkleTree(data []int) MerkleTree {
 		tree[i] = hashString(tree[i*2] + tree[i*2+1])
 	}
 
+	fmt.Print("\n NewMerkleTree: ")
+	fmt.Print(data)
+	fmt.Print(appendedData)
+	fmt.Print(tree)
 	return MerkleTree{
 		data: data,
 		tree: tree,
@@ -155,14 +168,14 @@ func getProof(problem Problem, assignment Assignment, num_queries int) (proof []
 		randomnessSeed += p
 	}
 
-	for _ = range make([]int, num_queries) {
+	for range make([]int, num_queries) {
 		witness, err := getWitness(problem, assignment)
 		if err != nil {
 			break
 		}
 		tree := NewMerkleTree(witness)
 		rand.Seed(int64(randomnessSeed))
-		queryIdx := rand.Intn(len(problem))
+		queryIdx := rand.Intn(len(problem) + 1)
 		queryAndResp := []string{tree.Root()}
 		queryAndResp = append(queryAndResp, fmt.Sprint(queryIdx))
 		val, path := tree.GetValueAndPath(queryIdx)
@@ -170,7 +183,7 @@ func getProof(problem Problem, assignment Assignment, num_queries int) (proof []
 		val2, path2 := tree.GetValueAndPath((queryIdx + 1) % len(witness))
 		queryAndResp = append(queryAndResp, fmt.Sprint(val2), strings.Join(path2[:], ","))
 		proof = append(proof, queryAndResp)
-		randomnessSeed += 10 // magic number, must same as 186 line
+		randomnessSeed += Random // magic number, must same as 186 line
 	}
 	return proof, nil
 }
@@ -192,17 +205,23 @@ func verifyProof(problem Problem, proof [][]string) bool {
 
 	for _, query := range proof {
 		rand.Seed(int64(randomnessSeed))
-		queryIdx := rand.Intn(len(problem))
+		queryIdx := rand.Intn(len(problem) + 1)
+		fmt.Printf("\n validate proof with query idx: %d", queryIdx)
 		merkleRoot := query[0]
 		proofChecksOut = boolBitwiseAnd(proofChecksOut, fmt.Sprint(queryIdx) == query[1])
 
 		if queryIdx < len(problem) {
 			val, _ := strconv.Atoi(query[2])
 			two := float64(val)
+			fmt.Printf("\n val2: %f", two)
 			val, _ = strconv.Atoi(query[4])
 			four := float64(val)
+			fmt.Printf("\n val4: %f", four)
 			proofChecksOut = boolBitwiseAnd(proofChecksOut, math.Abs(two-four) == math.Abs(float64(problem[queryIdx])))
 		} else {
+			fmt.Print("validate the last value")
+			fmt.Printf("\n val2: %s", query[2])
+			fmt.Printf("\n val4: %s", query[4])
 			proofChecksOut = query[2] == query[4]
 		}
 
@@ -211,7 +230,7 @@ func verifyProof(problem Problem, proof [][]string) bool {
 
 		out, _ = verifyMerklePath(merkleRoot, len(problem)+1, (queryIdx+1)%(len(problem)+1), query[4], strings.Split(query[5], ","))
 		proofChecksOut = boolBitwiseAnd(proofChecksOut, out)
-		randomnessSeed += 10 // magic number, must same as 160 line
+		randomnessSeed += Random // magic number, must same as 160 line
 	}
 	return proofChecksOut
 }
