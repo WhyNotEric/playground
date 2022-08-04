@@ -48,6 +48,7 @@ def flatten_stmt(stmt):
     elif isinstance(stmt, ast.Return):
         target = "~out"
     
+    print("------------- stmt", ast.dump(stmt))
     return flatten_expr(target, stmt.value)
 
 
@@ -89,7 +90,7 @@ def flatten_expr(target, expr):
                     o.append(['*', nxt, latest, base])
                 return o
         else:
-            raise Exception("bad operation: %s" % ast.dump(stmt.op))
+            raise Exception("bad operation: %s" % ast.dump(expr))
         
         if isinstance(expr.left, (ast.Name, ast.Num)):
             var1 = expr.left.id if isinstance(expr.left, ast.Name) else expr.left.n
@@ -100,19 +101,107 @@ def flatten_expr(target, expr):
         
         if isinstance(expr.right, (ast.Name, ast.Num)):
             var2 = expr.right.id if isinstance(expr.right, ast.Name) else expr.right.n
-            sub2 = flatten_expr(var2, expr.right)
+            sub2 = []
         return sub1 + sub2 + [[op, target, var1, var2]]
     else:
-        raise Exception("unexpected statement value: %r" % stmt.value)
+        raise Exception("unexpected expr : %r" % ast.dump(expr))
+
+def insert_var(arr, varz, var, used, reverse=False):
+    if isinstance(var, str):
+        if var not in used:
+            raise Exception("using a variable before it it set")
+        arr[varz.index(var)] += (-1 if reverse else 1)
+    elif isinstance(var, int):
+        arr[0] += var * (-1 if reverse else 1)
+
+def get_var_replacement(inputs, flatcode):
+    return ['~one'] + [x for x in inputs] + ['~out'] + [c[1] for c in flatcode if c[1] not in inputs and c[1] != '~out']
+
+def flatcode_to_r1cs(inputs, flatcode):
+    varz = get_var_replacement(inputs, flatcode)
+    A, B, C = [], [], []
+    used = {i: True for i in inputs}
+    for x in flatcode:
+        a, b, c = [0] * len(varz), [0] * len(varz), [0] * len(varz)
+        if x[1] in used:
+            raise Exception("variable already used: %r" % x[1])
+        used[x[1]] = True
+        if x[0] == 'set':
+            a[varz.index(x[1])] += 1
+            insert_var(a, varz, x[2], used, reverse=True)
+            b[0] = 1
+        elif x[0] == '+' or x[0] == '-':
+            c[varz.index(x[1])] = 1
+            insert_var(a, varz, x[2], used)
+            insert_var(a, varz, x[3], used, reverse=(x[0] == '-'))
+            b[0] = 1
+        elif x[0] == '*':
+            c[varz.index(x[1])] = 1
+            insert_var(a, varz, x[2], used)
+            insert_var(b, varz, x[3], used)
+        elif x[0] == '/':
+            insert_var(c, varz, x[2], used)
+            a[varz.index(x[1])] = 1
+            insert_var(b, varz, x[3], used)
+        
+        A.append(a)
+        B.append(b)
+        C.append(c)
+    return A, B, C
+
+
+def grab_var(varz, assignment, var):
+    if isinstance(var, str):
+        return assignment[varz.index(var)]
+    elif isinstance(var, int):
+        return var
+    else:
+        raise Exception("What kind of expression is this? %r" % var)
+
+def assign_variables(inputs, input_vars, flatcode):
+    varz =get_var_replacement(inputs, flatcode=flatcode)
+    assignment = [0] * len(varz)
+    assignment[0] = 1
+    for i, inp in enumerate(input_vars):
+        assignment[i+1] = inp
+    
+    for x in flatcode:
+        if x[0] == 'set':
+            assignment[varz.index(x[1])] = grab_var(varz, assignment, x[2])
+        elif x[0] == '+':
+            assignment[varz.index(x[1])] = grab_var(varz, assignment, x[2]) + grab_var(varz, assignment, x[3])
+        elif x[0] == '-':
+            assignment[varz.index(x[1])] = grab_var(varz, assignment, x[2]) - grab_var(varz, assignment, x[3])
+        elif x[0] == '*':
+            assignment[varz.index(x[1])] = grab_var(varz, assignment, x[2]) * grab_var(varz, assignment, x[3])
+        elif x[0] == '/':
+            assignment[varz.index(x[1])] = grab_var(varz, assignment, x[2]) / grab_var(varz, assignment, x[3])
+    
+    return assignment
+
+def code_to_r1cs_with_inputs(code, input_vars):
+    inputs, body = extract_inputs_and_body(parse(code))
+    print("Inputs", inputs)
+    print("body", body)
+    flatcode = flatten_body(body)
+    print("flatcode", flatcode)
+    print("input var assignment", get_var_replacement(inputs, flatcode))
+    A, B, C = flatcode_to_r1cs(inputs, flatcode)
+    r = assign_variables(inputs, input_vars, flatcode)
+    return r, A, B, C
 
 code = """
 def qeval(x):
     y = x**3
     return y + x + 5
 """
-inputs, body = extract_inputs_and_body(parse(code))
+r, A, B, C = code_to_r1cs_with_inputs(code, [3])
 
-print("Inputs", inputs)
-print("body", body)
-print(flatten_body(body))
+print("r", r)
+print("A")
+for x in A: print(x)
+print("B")
+for x in B: print(x)
+print("C")
+for x in C: print(x)
 
