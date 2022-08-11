@@ -12,4 +12,63 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+
+# Vim
+*.swp
+
+# JetBrains/IntelliJ
+.idea
+.graphqlconfig
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.\#*
+.dir-locals.el
+
+# Go
+*.o
+*.a
+*.so
+
+# C
+*.dylib
+
+# Mac OS X
+.DS_Store
+
+# Python
+*.py[cod]
+__pycache__
+
+# Test binaries
+*.test
+
+npm-debug.log
+yarn-error.log
+
+.bin/
+
+/vendor/
+
+# Client
+node_modules
+package-lock.json
+.nyc_output/
+coverage/
+out/
+/dist
+*.tsbuildinfo
+*.module.scss.d.ts
+
+.eslintcache
+storybook-static/
+
+# Certificates
+*.pem
+*.crt
+
+.vscode
