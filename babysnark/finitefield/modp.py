@@ -27,7 +27,7 @@ def IntegersModP(p):
     
     @typecheck
     def __mul__(self, other):
-      return IntegersModP(self.n * other.n)
+      return IntergerModP(self.n * other.n)
 
     def __neg__(self):
       return IntergerModP(-self.n)
