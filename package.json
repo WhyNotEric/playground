@@ -41,6 +41,7 @@
     "@typescript-eslint/parser": "^4.33.0",
     "chai": "^4.3.6",
     "chalk": "4.1.2",
+    "circomlib": "^2.0.5",
     "dotenv": "^16.0.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
@@ -60,16 +61,13 @@
     "lint-staged": "^13.0.3",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-dev.23",
+    "snarkjs": "^0.4.27",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.19",
     "squirrelly": "^8.0.8",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.0",
     "typescript": "^4.7.4"
-  },
-  "dependencies": {
-    "circom": "^0.5.46",
-    "snarkjs": "^0.4.27"
   },
   "version": "0.0.0"
 }

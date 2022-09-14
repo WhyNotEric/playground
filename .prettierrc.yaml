@@ -1,0 +1,14 @@
+
+
+# .prettierrc or .prettierrc.yaml
+trailingComma: "all"
+printWidth: 80
+tabWidth: 2
+useTabs: false
+semi: false
+singleQuote: true
+overrides:
+  - files: "*.sol"
+    options:
+        singleQuote: false
+        explicitTypes: always
