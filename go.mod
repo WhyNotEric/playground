@@ -1,3 +1,3 @@
-module github.com/codeintel-cn/zk-playground
+module github.com/codeintel-cn/playground
 
 go 1.18

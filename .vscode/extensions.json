@@ -1,0 +1,21 @@
+{
+  // See http://go.microsoft.com/fwlink/?LinkId=827846
+  // for the documentation about the extensions.json format
+  "recommendations": [
+    "EditorConfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "golang.go",
+    "exiasr.hadolint",
+    "bierner.markdown-mermaid",
+    "ecmel.vscode-html-css",
+    "orta.vscode-jest",
+    "dbaeumer.vscode-eslint",
+    "foxundermoon.shell-format",
+    "timonwong.shellcheck",
+    "NomicFoundation.hardhat-solidity"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "eg2.tslint"
+  ]
+}

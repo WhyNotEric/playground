@@ -1,0 +1,48 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/coverage": true,
+    "**/out": true,
+    "**/__fixtures__/**": true,
+    "**/.cache": true,
+    "**/.nyc_output": true,
+    "**/.eslintcache": true
+  },
+  "files.exclude": {
+    "**/*.scss.d.ts": true
+  },
+  "editor.formatOnSave": true,
+  "go.useLanguageServer": true,
+  "gopls": {
+    "local": "github.com/codeintel-cn/playground"
+  },
+  "jest.showCoverageOnLoad": false,
+  "npm.packageManager": "yarn",
+  "npm.runSilent": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsc.autoDetect": "off",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.packageManager": "yarn",
+  "eslint.lintTask.enable": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.options": { "cache": true },
+  "eslint.workingDirectories": ["./packages/tornado", "./packages/*"],
+  "go.lintTool": "golangci-lint",
+  "shellformat.flag": "-i 2 -ci",
+  "jest.jestCommandLine": "yarn -s test",
+  "[helm]": {
+    "editor.formatOnSave": false
+  }
+}
