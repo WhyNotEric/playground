@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "yarn build:circuits:compile && yarn build:circuits:setup && yarn build:contracts",
-    "build:contracts": "hardhat compile && typechain --out-dir types --target ethers-v5 './artifacts/contracts/**/!(*.dbg).json'",
+    "build:contracts": "hardhat compile",
     "build:circuits:compile": "mkdir -p build && circom circuits/withdraw.circom --r1cs --wasm --c -o build",
     "build:circuits:setup": "yarn circuits:setup:phase2 && yarn circuits:setup:zkey && yarn circuits:setup:vkey && yarn circuits:setup:sol",
     "circuits:setup:phase2": "snarkjs powersoftau prepare phase2 ../../circom/pot12_final.ptau build/phase2_final.ptau",
