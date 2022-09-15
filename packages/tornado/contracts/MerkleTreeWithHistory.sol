@@ -65,6 +65,8 @@ contract MerkleTreeWithHistory {
       if (currentIndex % 2 == 0) {
         left = currentLevelHash;
         right = zeros[i];
+
+        filledSubtrees[i] = currentLevelHash;
       } else {
         left = filledSubtrees[i];
         right = currentLevelHash;
