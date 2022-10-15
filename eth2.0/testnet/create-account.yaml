@@ -2,7 +2,7 @@ version: "3.9"
 services:
   validator-import-launchpad:
     container_name: validator-import-launchpad
-    image: gcr.io/prysmaticlabs/prysm/validator:latest
+    image: gcr.io/prysmaticlabs/prysm/validator:stable
     command: accounts import --keys-dir="/keys" --wallet-dir="/data/wallets" --wallet-password-file="/data/passwords/password.txt" --accept-terms-of-use --goerli
     volumes:
       - ./prysm_data:/data

@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   geth:
-    image: ethereum/client-go:latest
+    image: ethereum/client-go:stable
     restart: always
     hostname: geth
     command: --goerli --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="engine,admin,eth,net,web3,personal" --authrpc.addr=0.0.0.0 --authrpc.jwtsecret /jwt.hex --authrpc.vhosts="*"
@@ -20,7 +20,7 @@ services:
       - ./jwt.hex:/jwt.hex
 
   beacon:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
     restart: always
     hostname: beacon-chain
     depends_on:
@@ -36,7 +36,7 @@ services:
       - ./data/prysm/beacon:/data
 
   validator:
-    image: gcr.io/prysmaticlabs/prysm/validator:latest
+    image: gcr.io/prysmaticlabs/prysm/validator:stable
     restart: on-failure
     hostname: validator
     depends_on:
