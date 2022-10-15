@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+
+  geth:
+    image: ethereum/client-go:latest
+    restart: always
+    hostname: geth
+    command: --goerli --http --http.port=8545 --http.addr=0.0.0.0 --http.vhosts="*" --allow-insecure-unlock --http.api="engine,admin,eth,net,web3,personal" --authrpc.addr=0.0.0.0 --authrpc.jwtsecret /jwt.hex --authrpc.vhosts="*"
+    stop_grace_period: 5m
+    ports:
+      - 30303:30303
+      - 8545:8545
+      - 8546:8546
+      - 8551:8551
+    volumes:
+      - ./data/geth:/root/.ethereum
+      - ./jwt.hex:/jwt.hex
+
+  beacon:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+    restart: always
+    hostname: beacon-chain
+    depends_on:
+      - geth
+    command: --goerli --config-file=/config/beacon.yaml
+    ports:
+      - 4000:4000
+      - 13000:13000/tcp
+      - 12000:12000/udp
+    volumes:
+      - ./beacon.yaml:/config/beacon.yaml:ro
+      - ./jwt.hex:/config/jwt.hex
+      - ./data/prysm/beacon:/data
+
+  validator:
+    image: gcr.io/prysmaticlabs/prysm/validator:latest
+    restart: on-failure
+    hostname: validator
+    depends_on:
+      - beacon
+    command: --goerli --config-file=/config/validator.yaml
+    ports:   
+      - 7500:7500/tcp
+    volumes:
+      - ./validator.yaml:/config/validator.yaml:ro
+      - ./prysm_data:/data
+# EOF

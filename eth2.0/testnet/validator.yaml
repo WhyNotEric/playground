@@ -1,0 +1,36 @@
+############################################################
+##
+## Read up on parameters on
+## https://docs.prylabs.network/docs/prysm-usage/parameters/
+##
+############################################################
+
+accept-terms-of-use: true
+
+##############
+# Connectivity
+beacon-rpc-provider: beacon:4000
+monitoring-host: 0.0.0.0
+
+grpc-gateway-host: 0.0.0.0 # web-ui
+
+#########
+# Web-UI
+web: true
+
+#####################################
+# Validator database, accounts & key management
+datadir: /data/db
+wallet-dir: /data/wallets
+wallet-password-file: /data/passwords/password.txt
+
+goerli: true
+proposer_config:
+  '0x8dc88931c188f6b3e9a6b0be39f1e58aff9d3bb4fabb162d58cb458f2eddbeecedaca1159043c205b54712fd39b688e8':
+    fee_recipient: '0x0f6F529b6285A432051E0f6DB4672a098051EFf8'
+default_config:
+  fee_recipient: '0x0f6F529b6285A432051E0f6DB4672a098051EFf8'
+
+###########
+# Fun Stuff
+graffiti: ""
