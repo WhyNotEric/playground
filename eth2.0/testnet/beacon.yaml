@@ -43,4 +43,8 @@ block-batch-limit: 512
 goerli: true
 jwt-secret: /config/jwt.hex
 suggested-fee-recipient: '0x0f6F529b6285A432051E0f6DB4672a098051EFf8'
+
+checkpoint-sync-url: https://goerli.checkpoint-sync.ethpandaops.io
+genesis-beacon-api-url: https://goerli.checkpoint-sync.ethpandaops.io
+enable-only-blinded-beacon-blocks: true
 # EOF
