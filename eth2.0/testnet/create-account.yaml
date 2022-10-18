@@ -7,3 +7,11 @@ services:
     volumes:
       - ./prysm_data:/data
       - ./validator_keys:/keys
+  
+  validator-import-launchpad-2:
+    container_name: validator-import-launchpad
+    image: gcr.io/prysmaticlabs/prysm/validator:stable
+    command: accounts import --keys-dir="/keys" --wallet-dir="/data/wallets" --wallet-password-file="/data/passwords/password.txt" --accept-terms-of-use --goerli
+    volumes:
+      - ./validator_2_data:/data
+      - ./validator_2_keys:/keys
