@@ -70,3 +70,5 @@ storybook-static/
 # Certificates
 *.pem
 *.crt
+
+target
