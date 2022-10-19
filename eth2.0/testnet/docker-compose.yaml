@@ -10,9 +10,9 @@ services:
     stop_grace_period: 5m
     ports:
       - 30303:30303
-      - 8545:8545
-      - 8546:8546
-      - 8551:8551
+      - 38545:8545
+      - 38546:8546
+      - 38551:8551
       - 30304:30304/udp
       - 30304:30304/tcp
     volumes:
@@ -27,7 +27,7 @@ services:
       - geth
     command: --goerli --config-file=/config/beacon.yaml
     ports:
-      - 4000:4000
+      - 34000:4000
       - 13000:13000/tcp
       - 12000:12000/udp
     volumes:
@@ -42,9 +42,10 @@ services:
     depends_on:
       - beacon
     command: --goerli --config-file=/config/validator.yaml
-    ports:   
+    ports:
       - 7500:7500/tcp
     volumes:
       - ./validator.yaml:/config/validator.yaml:ro
       - ./prysm_data:/data
+
 # EOF
